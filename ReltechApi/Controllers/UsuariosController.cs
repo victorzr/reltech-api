@@ -28,76 +28,111 @@ namespace ReltechApi.Controllers
         [HttpGet]
         public IActionResult GetAllUsuarios()
         {
-            var lstUsuarios = _usuariosService.GetAllUsuarios();
-            return Ok(lstUsuarios);
+            try
+            {
+                var lstUsuarios = _usuariosService.GetAllUsuarios();
+                return Ok(lstUsuarios);
+            }
+            catch
+            {
+                return ErrorInterno();
+            }
         }
 
         [HttpGet]
         [Route("{id}")]
         public IActionResult GetUsuario([FromRoute] int id)
         {
-            var usuario = _usuariosService.GetUsuario(id);
-            if(usuario != null)
+            try
             {
-                return Ok(usuario);
-            }
+                var usuario = _usuariosService.GetUsuario(id);
+                if (usuario != null)
+                {
+                    return Ok(usuario);
+                }
 
-            return Problem("Usuario no encontrado");
+                return Problem("Usuario no encontrado");
+            }
+            catch
+            {
+                return ErrorInterno();
+            }
         }
 
         [HttpPost]
         public IActionResult AddUsuario([FromBody] Usuarios usuario)
         {
-            if (!ModelState.IsValid) return ValidationProblem();
-            else if (!_organizacionesService.ExisteOrganizacion((int)usuario.OrganizacionId)) return Problem("Organización no encontrada");
-            else
+            try
             {
-                string validationResult = ValidarDatosUnicos(usuario);
-                if (validationResult != null) return ValidationProblem(validationResult);
-            }
+                if (!ModelState.IsValid) return ValidationProblem();
+                else if (!_organizacionesService.ExisteOrganizacion((int)usuario.OrganizacionId)) return Problem("Organización no encontrada");
+                else
+                {
+                    string validationResult = ValidarDatosUnicos(usuario);
+                    if (validationResult != null) return ValidationProblem(validationResult);
+                }
 
-            _usuariosService.AddUsuario(usuario);
-            return Created(String.Format("{0}://{1}{2}/{3}",
-                    HttpContext.Request.Scheme,
-                    HttpContext.Request.Host,
-                    HttpContext.Request.Path,
-                    usuario.Id
-                ), usuario);
+                _usuariosService.AddUsuario(usuario);
+                return Created(String.Format("{0}://{1}{2}/{3}",
+                        HttpContext.Request.Scheme,
+                        HttpContext.Request.Host,
+                        HttpContext.Request.Path,
+                        usuario.Id
+                    ), usuario);
+            }
+            catch
+            {
+                return ErrorInterno();
+            }
         }
 
         [HttpPatch]
         [Route("{id}")]
         public IActionResult EditUsuario([FromRoute] int id, [FromBody] Usuarios usuarioEditado)
         {
-            if (!ModelState.IsValid) return ValidationProblem();
-            else if (!_organizacionesService.ExisteOrganizacion((int)usuarioEditado.OrganizacionId)) return Problem("Organización no encontrada");
-            
-            var usuarioExistente = _usuariosService.GetUsuario(id);
-            if (usuarioExistente != null)
+            try
             {
-                string validationResult = ValidarDatosUnicos(usuarioExistente, usuarioEditado);
-                if (validationResult != null) return ValidationProblem(validationResult);
+                if (!ModelState.IsValid) return ValidationProblem();
+                else if (!_organizacionesService.ExisteOrganizacion((int)usuarioEditado.OrganizacionId)) return Problem("Organización no encontrada");
 
-                usuarioEditado.Id = usuarioExistente.Id;
-                _usuariosService.EditUsuario(usuarioEditado);
-                return Ok("Usuario editado con éxito");
+                var usuarioExistente = _usuariosService.GetUsuario(id);
+                if (usuarioExistente != null)
+                {
+                    string validationResult = ValidarDatosUnicos(usuarioExistente, usuarioEditado);
+                    if (validationResult != null) return ValidationProblem(validationResult);
+
+                    usuarioEditado.Id = usuarioExistente.Id;
+                    _usuariosService.EditUsuario(usuarioEditado);
+                    return Ok("Usuario editado con éxito");
+                }
+
+                return Problem("Usuario no encontrado");
             }
-                
-            return Problem("Usuario no encontrado");
+            catch
+            {
+                return ErrorInterno();
+            }
         }
 
         [HttpDelete]
         [Route("{id}")]
         public IActionResult DeleteUsuario([FromRoute] int id)
         {
-            var usuario = _usuariosService.GetUsuario(id);
-            if (usuario != null)
+            try
             {
-                _usuariosService.DeleteUsuario(usuario);
-                return Ok("Usuario eliminado con éxito");
-            }
+                var usuario = _usuariosService.GetUsuario(id);
+                if (usuario != null)
+                {
+                    _usuariosService.DeleteUsuario(usuario);
+                    return Ok("Usuario eliminado con éxito");
+                }
 
-            return Problem("Usuario no encontrado");
+                return Problem("Usuario no encontrado");
+            }
+            catch
+            {
+                return ErrorInterno();
+            }
         }
 
         private string ValidarDatosUnicos(Usuarios usuario)
@@ -139,6 +174,11 @@ namespace ReltechApi.Controllers
             }
 
             return datoRepetido;
+        }
+
+        private ObjectResult ErrorInterno()
+        {
+            return Problem("Ha ocurrido un error al procesar la solicitud");
         }
     }
 }
