@@ -12,6 +12,7 @@ using ReltechApi.CustomValidation;
 
 namespace ReltechApi.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
     public class UsuariosController : ControllerBase
     {
@@ -25,7 +26,6 @@ namespace ReltechApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]")]
         public IActionResult GetAllUsuarios()
         {
             var lstUsuarios = _usuariosService.GetAllUsuarios();
@@ -33,7 +33,7 @@ namespace ReltechApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/{id}")]
+        [Route("{id}")]
         public IActionResult GetUsuario([FromRoute] int id)
         {
             var usuario = _usuariosService.GetUsuario(id);
@@ -46,7 +46,6 @@ namespace ReltechApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/[controller]")]
         public IActionResult AddUsuario([FromBody] Usuarios usuario)
         {
             if (!ModelState.IsValid) return ValidationProblem();
@@ -67,7 +66,7 @@ namespace ReltechApi.Controllers
         }
 
         [HttpPatch]
-        [Route("api/[controller]/{id}")]
+        [Route("{id}")]
         public IActionResult EditUsuario([FromRoute] int id, [FromBody] Usuarios usuarioEditado)
         {
             if (!ModelState.IsValid) return ValidationProblem();
@@ -88,7 +87,7 @@ namespace ReltechApi.Controllers
         }
 
         [HttpDelete]
-        [Route("api/[controller]/{id}")]
+        [Route("{id}")]
         public IActionResult DeleteUsuario([FromRoute] int id)
         {
             var usuario = _usuariosService.GetUsuario(id);

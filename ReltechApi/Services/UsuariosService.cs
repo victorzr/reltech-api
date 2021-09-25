@@ -40,7 +40,7 @@ namespace ReltechApi.Services
             usuarioExistente.Telefono = usuario.Telefono;
             usuarioExistente.OrganizacionId = usuario.OrganizacionId;
             
-            _dbContext.Entry(usuarioExistente).State = EntityState.Modified;
+            _dbContext.Usuarios.Update(usuarioExistente);
             _dbContext.SaveChanges();
         }
 

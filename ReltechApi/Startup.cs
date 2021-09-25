@@ -29,7 +29,7 @@ namespace ReltechApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddEntityFrameworkNpgsql().AddDbContext<ReltechCrudContext>(options =>
+            services.AddDbContext<ReltechCrudContext>(options =>
             {
                 options.UseNpgsql(Configuration.GetConnectionString("RealtechCrud"));
             });
